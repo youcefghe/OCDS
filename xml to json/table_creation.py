@@ -1,19 +1,7 @@
-"""
-table_creation.py
-Module to create the necessary tables in the SQL database, plus history tables
-and triggers so changes are tracked over time.
-
-In this updated version:
-  - The 'releases' table now also stores the single tender item (if any).
-  - We have removed the 'tender_items' table entirely.
-  - We add an 'ocid' column to the 'contract_transactions' table.
-  - We add columns for a single 'additionalClassification' as well.
-"""
 
 def create_tables(cursor):
     # --------------------------------------------------------
-    # 1. 'releases' table (with tender fields + single tender item columns)
-    #    + single additionalClassification columns
+    # 1. 'releases' table
     # --------------------------------------------------------
     sql_releases = """
     IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'releases')
@@ -58,7 +46,7 @@ def create_tables(cursor):
     """
     cursor.execute(sql_releases)
 
-    # History for 'releases' (now includes single tender item columns + single additionalClassification)
+    # History for releases
     sql_releases_history = """
     IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'releases_history')
     BEGIN
@@ -291,11 +279,6 @@ def create_tables(cursor):
     END;
     """
     cursor.execute(sql_trg_release_parties_update)
-
-    # --------------------------------------------------------
-    # (No separate 'tender_items' table anymore)
-    # --------------------------------------------------------
-
     # --------------------------------------------------------
     # 4. 'lots' table
     # --------------------------------------------------------
@@ -677,7 +660,7 @@ def create_tables(cursor):
     cursor.execute(sql_trg_amendments_update)
 
      # --------------------------------------------------------
-    # 10) 'contract_transactions' with NEW PK: (ocid, transaction_id)
+    # 10) 'contract_transactions' 
     # --------------------------------------------------------
     sql_contract_transactions = """
     IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'contract_transactions')
@@ -701,7 +684,7 @@ def create_tables(cursor):
     """
     cursor.execute(sql_contract_transactions)
 
-    # History table for contract_transactions (unchanged except we store ocid, transaction_id)
+    # History table for contract_transactions 
     sql_contract_transactions_history = """
     IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'contract_transactions_history')
     BEGIN
